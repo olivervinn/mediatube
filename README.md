@@ -1,4 +1,7 @@
-# html
+# MediaTube
+
+![alt](./docs/example.png)
+
 
 ## Project setup
 
