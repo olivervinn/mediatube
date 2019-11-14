@@ -16,6 +16,7 @@ export default new Vuex.Store({
       console.assert(videoId !== undefined)
       if (videoId !== undefined) {
         localStorage.setItem('video_' + videoId, flag)
+        localStorage.setItem('last_video', videoId)
       }
     },
     setUnWatched(state, { videoId, flag }) {
@@ -35,8 +36,13 @@ export default new Vuex.Store({
     },
     async hasWatched({ commit }, { videoId }) {
       const storeValue = localStorage.getItem('video_' + videoId)
-      const hasWatched = storeValue === 'watched'
-      return hasWatched
+      const hasViewed = storeValue === 'watched'
+      return hasViewed
+    },
+    async lastWatched({ commit }, { videoId }) {
+      const storeValue = localStorage.getItem('last_video')
+      const lastViewed = storeValue === videoId
+      return lastViewed
     }
   }
 })

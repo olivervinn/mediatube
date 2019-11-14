@@ -2,7 +2,7 @@
   <div class="main">
     <article class="is-default content-area">
       <div class="content main-area container">
-        <div class="button is-primary sort-button" @click="toggleOrder">Sort</div>
+        <div class="sort-button"></div>
         <transition-group enter>
           <div
             v-for="(yearItemGrouping, index) in yearGroups"

@@ -9,7 +9,7 @@ import Config from '@/config'
 export default {
   name: 'SiteChrome',
   data: () => ({
-    title: Config.siteName
+    title: Config.siteName()
   })
 }
 </script>

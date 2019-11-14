@@ -4,6 +4,8 @@
     <div class="columns">
       <div class="column">
         <a class="button is-link" @click="$router.back()">back</a>
+        <a class="button is-info sort-button" @click="toggleOrderLength">Sort (Length)</a>
+        <a class="button is-primary sort-button" @click="toggleOrderName">Sort (Name)</a>
       </div>
     </div>
     <transition-group
@@ -11,12 +13,7 @@
       name="fade"
       class="columns is-multiline is-variable is-1 video-browser"
     >
-      <VideoPreview
-        v-for="i in files"
-        :key="i.videoId"
-        :video-id="i.videoId"
-        class="video-preview"
-      ></VideoPreview>
+      <VideoPreview v-for="i in files" :key="i.videoId" :video-id="i.videoId" class="video-preview"></VideoPreview>
 
       <div v-for="i in files.length % 2" :key="`padding${i}`" class="column column-filler"></div>
     </transition-group>
@@ -44,6 +41,7 @@ export default {
   data: () => ({
     isLoading: true,
     isFullPage: false,
+    reverse: false,
     files: [],
     loadingComponent: null,
     baseuri: Config.baseuri,
@@ -71,6 +69,24 @@ export default {
         container: this.isFullPage ? null : this.$refs.viewer.$el
       })
     },
+    toggleOrderLength: function() {
+      this.files.sort(function(a, b) {
+        return b.duration - a.duration
+      })
+      if (this.reverse) {
+        this.files.reverse()
+      }
+      this.reverse = !this.reverse
+    },
+    toggleOrderName: function() {
+      this.files.sort(function(a, b) {
+        return b.videoId.localeCompare(a.videoId)
+      })
+      if (this.reverse) {
+        this.files.reverse()
+      }
+      this.reverse = !this.reverse
+    },
     getData(filter) {
       let id = this.id
       this.files = []
@@ -80,20 +96,24 @@ export default {
             for (let p in data[id].files) {
               let _ = data[id].files[p]
               this.files.push({
-                videoId: _._
+                videoId: _._,
+                duration: _.duration
               })
             }
           }
         } else {
+          data[id].files.sort()
           for (let p in data[id].files) {
             const fileElement = data[id].files[p]
             if (fileElement.tags && fileElement.tags.contains(filter)) {
               this.files.push({
-                videoId: fileElement._
+                videoId: fileElement._,
+                duration: fileElement.duration
               })
             }
           }
         }
+        this.toggleOrderLength()
         setTimeout(() => {
           this.loadingComponent.close()
         }, 10)
@@ -136,5 +156,9 @@ export default {
 }
 .fade-leave-active {
   transition: opacity 0.25s ease, max-height 0.25s step-end;
+}
+.sort-button {
+  margin-left: 5px;
+  margin-bottom: 10px;
 }
 </style>

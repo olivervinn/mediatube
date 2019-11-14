@@ -10,7 +10,7 @@
 
       <div class="navbar-menu">
         <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link">Year</a>
+          <a class="navbar-link">View</a>
           <div class="navbar-dropdown">
             <router-link
               v-for="folder in folders"
@@ -51,7 +51,7 @@ export default {
     }
   },
   data: () => ({
-    siteName: Config.siteName,
+    siteName: Config.siteName(),
     previousRoute: '',
     folders: [],
     year: new Date().getFullYear()

@@ -5,7 +5,6 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "cpx dist/** Z:/docker/webvinn/home/dist",
     "lint": "vue-cli-service lint",
     "docs:build": "vuepress build docs",
     "docs:serve": "vuepress dev docs"

@@ -7,7 +7,8 @@
         @mouseout="showThumbnail"
         @mouseover="playVideoPreview"
       >
-        <p v-if="watched" class="watched">watched</p>
+        <p v-if="lastwatch" class="lastwatch">just watched</p>
+        <p v-else-if="watched" class="watched">watched</p>
         <div class="preview-overlay">
           <p>{{ meta.duration | timecode }}</p>
         </div>
@@ -52,16 +53,19 @@ export default {
       duration: 0
     },
     isHovering: false,
-    watched: false
+    watched: false,
+    lastwatch: false
   }),
   async beforeMount() {
     this.meta = await Config.fetchMeta(this.videoId)
     this.showThumbnail()
     this.getWatchState()
+    this.getLastWatchState()
   },
   mounted() {},
   updated() {
     this.getWatchState()
+    this.getLastWatchState()
   },
   methods: {
     showThumbnail: function() {
@@ -90,6 +94,11 @@ export default {
       this.$store.dispatch('hasWatched', { videoId: this.videoId }).then(haswatched => {
         this.watched = haswatched
       })
+    },
+    getLastWatchState: function() {
+      this.$store.dispatch('lastWatched', { videoId: this.videoId }).then(waslast => {
+        this.lastwatch = waslast
+      })
     }
   }
 }
@@ -109,13 +118,15 @@ export default {
 .preview-canvas {
   cursor: pointer;
   background-size: 100%;
+  background-color: #000000;
+  background-position: center;
   background-repeat: no-repeat;
   min-height: $preview-height;
   min-width: $preview-width;
   transition: background-image 0.5s ease-in-out;
 }
 .preview-detail {
-  background-color: rgba(211, 211, 211, 0.226);
+  background-color: rgba(211, 211, 211, 0.281);
   color: black;
   min-width: $preview-width;
   font-size: 1em;
@@ -141,9 +152,22 @@ export default {
   .watched {
     display: none;
   }
+  .lastwatch {
+    display: none;
+  }
 }
 .watched {
-  background-color: rgba(170, 29, 29, 0.596);
+  background-color: rgba(170, 29, 29, 0.685);
+  color: rgb(255, 255, 255);
+  position: relative;
+  top: 10px;
+  left: 10px;
+  padding: 0px 5px;
+  float: left;
+  display: block;
+}
+.lastwatch {
+  background-color: rgba(29, 170, 36, 0.726);
   color: rgb(255, 255, 255);
   position: relative;
   top: 10px;
