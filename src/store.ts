@@ -26,7 +26,12 @@ export default new Vuex.Store({
   getters: {},
   actions: {
     async login({ commit }, { password }) {
-      commit('setToken', password)
+      if (password !== '') {
+        commit('setToken', password)
+      }
+    },
+    async logout({ commit }, {  }) {
+      commit('setToken', '')
     },
     async watched({ commit }, { videoId }) {
       commit('setWatched', { videoId, flag: 'watched' })

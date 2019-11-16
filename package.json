@@ -80,7 +80,7 @@
     "serve-static": "^1.13.2",
     "style-loader": "^0.23.1",
     "svg-sprite-loader": "3.8.0",
-    "svgo": "1.0.5",
+    "svgo": "^1.3.2",
     "tree-kill": "1.2.1",
     "typescript": "^3.2.1",
     "uglifyjs-webpack-plugin": "^2.1.2",

@@ -2,9 +2,11 @@
   <div class="preview-container">
     <router-link :key="videoId" :to="{ name: 'play', params: { id: videoId } }">
       <div
+        v-lazy
         ref="spriteCanvas"
         class="preview-canvas"
-        @mouseout="showThumbnail"
+        :data-uri="thumbnailUri"
+        @mouseout="loadThumbnail"
         @mouseover="playVideoPreview"
       >
         <p v-if="lastwatch" class="lastwatch">just watched</p>
@@ -22,8 +24,12 @@
 
 <script>
 import Config from '@/config'
+import Lazy from '@/directives/lazy'
 export default {
   name: 'VideoPreview',
+  directives: {
+    lazy: Lazy
+  },
   filters: {
     timecode(time) {
       var hrs = ~~(time / 3600)
@@ -54,41 +60,36 @@ export default {
     },
     isHovering: false,
     watched: false,
-    lastwatch: false
+    lastwatch: false,
+    thumbnailUri: {}
   }),
   async beforeMount() {
     this.meta = await Config.fetchMeta(this.videoId)
-    this.showThumbnail()
+  },
+  mounted() {
     this.getWatchState()
     this.getLastWatchState()
+    this.thumbnailUri = Config.getResource(this.videoId, 'thumbnail')
   },
-  mounted() {},
   updated() {
     this.getWatchState()
     this.getLastWatchState()
   },
   methods: {
-    showThumbnail: function() {
+    loadThumbnail: function() {
       this.isHovering = false
-      let src = Config.getResource(this.videoId, 'thumbnail')
-      var image = new Image()
-      image.onload = () => {
-        if (!this.isHovering) {
-          this.$refs.spriteCanvas.style.backgroundImage = `url('${src}')`
-        }
-      }
-      image.src = src
+      this.$refs.spriteCanvas.style.backgroundImage = `url('${this.thumbnailUri}')`
     },
     playVideoPreview: function() {
       this.isHovering = true
       let src = Config.getResource(this.videoId, 'preview')
       var image = new Image()
+      image.src = src
       image.onload = () => {
         if (this.isHovering) {
           this.$refs.spriteCanvas.style.backgroundImage = `url('${src}')`
         }
       }
-      image.src = src
     },
     getWatchState: function() {
       this.$store.dispatch('hasWatched', { videoId: this.videoId }).then(haswatched => {
@@ -107,7 +108,6 @@ export default {
 <style lang="scss" scoped>
 @import '../scss/_base.scss';
 .preview-container {
-  background: rgba(209, 207, 209, 0);
   overflow: hidden;
   width: auto;
   margin: 0px;
@@ -115,21 +115,30 @@ export default {
 .preview-container {
   zoom: 0.85;
 }
+.loaded {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transition: background-image 0.3s ease-in;
+}
 .preview-canvas {
+  opacity: 0;
+  visibility: hidden;
   cursor: pointer;
+  border-radius: 5px 5px 0px 0px;
   background-size: 100%;
   background-color: #000000;
   background-position: center;
   background-repeat: no-repeat;
   min-height: $preview-height;
   min-width: $preview-width;
-  transition: background-image 0.5s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
 }
 .preview-detail {
   background-color: rgba(211, 211, 211, 0.281);
   color: black;
   min-width: $preview-width;
   font-size: 1em;
+  border-radius: 0px 0px 5px 5px;
 }
 .preview-overlay {
   position: relative;

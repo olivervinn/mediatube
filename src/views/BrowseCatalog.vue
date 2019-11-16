@@ -82,7 +82,7 @@ export default {
         years.push({
           name: p,
           ago: nyear - year,
-          fileCount: response[p].files.length,
+          fileCount: response[p].assets.length,
           watchCount: watchCount[p],
           duration: response[p].time
         })
@@ -96,9 +96,6 @@ export default {
         this.yearGroups.push(years)
       }
       this.toggleOrder()
-      if (this.yearGroups.length === 0) {
-        this.$router.push('/logout')
-      }
     })
   },
   methods: {

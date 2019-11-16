@@ -12,7 +12,6 @@ const router = new Router({
       path: "/login",
       component: () => import("./views/Login.vue"),
       meta: {
-        title: `${Config.siteName()} - Login`,
         metaTags: {},
         auth: false
       }
@@ -21,7 +20,6 @@ const router = new Router({
       path: "/logout",
       component: () => import("./views/Login.vue"),
       meta: {
-        title: `${Config.siteName()} - Logout`,
         metaTags: {},
         auth: false
       }
@@ -33,9 +31,8 @@ const router = new Router({
         {
           name: "preview",
           path: ":id",
-          component: () => import("./views/VideoBrowser.vue"),
+          component: () => import("./views/BrowseVideos.vue"),
           meta: {
-            title: `${Config.siteName()} - Browse`,
             metaTags: {},
             auth: true
           },
@@ -43,9 +40,8 @@ const router = new Router({
         },
         {
           path: "",
-          component: () => import("./views/BrowseLandingPage.vue"),
+          component: () => import("./views/BrowseCatalog.vue"),
           meta: {
-            title: `${Config.siteName()} - Browse`,
             metaTags: {},
             auth: true
           }
@@ -62,7 +58,6 @@ const router = new Router({
           name: "play",
           component: () => import("./views/VideoPlayer.vue"),
           meta: {
-            title: `${Config.siteName()} - Play`,
             metaTags: {},
             auth: true
           }

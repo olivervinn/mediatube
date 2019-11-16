@@ -8,6 +8,7 @@ module.exports = {
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Methods': '*'
     },
+    proxy: 'https://<external host>',
     staticOptions: {}
   },
   publicPath: '/'

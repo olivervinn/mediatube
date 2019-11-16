@@ -19,6 +19,7 @@
           type="password"
           name="password"
           autocomplete="current-password"
+          v-on:keyup.enter="login"
         />
         <span class="icon is-medium is-left">
           <i class="fas fa-envelope"></i>

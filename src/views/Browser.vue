@@ -61,12 +61,13 @@ export default {
     Config.fetchCatalog().then(response => {
       this.folders = []
       for (let p in response) {
-        if (response[p].files)
+        if (response[p].assets) {
           this.folders.push({
             name: p,
             time: response[p].time,
-            files: response[p].files
+            assets: response[p].assets
           })
+        }
       }
     })
   },
