@@ -5,25 +5,33 @@
         <div class="sort-button"></div>
         <transition-group enter>
           <div
-            v-for="(yearItemGrouping, index) in yearGroups"
+            v-for="(itemGrouping, index) in itemGroups"
             :key="'d' + index"
             class="tile is-ancestor"
           >
             <br />
-            <div v-for="yearItem in yearItemGrouping" :key="yearItem.name" class="tile is-parent">
+            <div
+              ref="itemGroupElement"
+              v-for="item in itemGrouping"
+              :key="item.name"
+              class="tile is-parent"
+            >
               <router-link
                 :class="
                   'tile is-child box year-tile notification ' +
-                    (allWatched(yearItem) ? 'all-watched' : '')
+                    (allWatched(item) ? 'all-watched' : '')
                 "
                 tag="article"
-                :to="{ name: 'preview', params: { id: yearItem.name } }"
+                :to="{ name: 'preview', params: { id: item.name } }"
               >
-                <span class="tag is-small is-rounded badge">{{ yearItem | viewed }}</span>
-                <p class="title">{{ yearItem.name }}</p>
-                <p class="subtitle">{{ yearItem.ago | yearsAgo }}</p>
-                <div class="content">
-                  <span class="is-light">{{ yearItem.duration | duration }}</span>
+                <div class="moz" :data-name="item.name"></div>
+                <div>
+                  <div class="content">
+                    <span class="tag is-small is-rounded badge">{{ item | viewed }}</span>
+                    <p class="title">{{ item.name }}</p>
+                    <p class="subtitle">{{ item.ago | yearsAgo }}</p>
+                    <p class="is-light duration">{{ item.duration | duration }}</p>
+                  </div>
                 </div>
               </router-link>
             </div>
@@ -40,7 +48,7 @@ export default {
   filters: {
     duration(seconds) {
       var date = new Date(seconds * 1000)
-      return `[${date.toISOString().substr(11, 8)}]`
+      return `[ ${date.toISOString().substr(11, 8)} ]`
     },
     yearsAgo(year) {
       if (!isNaN(year)) {
@@ -63,19 +71,17 @@ export default {
     }
   },
   data: () => ({
-    yearGroups: []
+    itemGroups: []
   }),
   computed: {},
-  mounted() {
-    // this.queryWatched()
-  },
+  mounted() {},
   created() {
     const watchCount = this.queryWatched()
     Config.fetchCatalog().then(response => {
       let lastYear = 0
       let nyear = new Date().getFullYear()
       let years = []
-      this.yearGroups = []
+      this.itemGroups = []
 
       for (let p in response) {
         let year = Number.parseInt(p)
@@ -87,23 +93,30 @@ export default {
           duration: response[p].time
         })
         if (year % 5 === 0 || year >= lastYear + 5) {
-          this.yearGroups.push(years)
+          this.itemGroups.push(years)
           years = []
           lastYear = year
         }
       }
       if (years.length) {
-        this.yearGroups.push(years)
+        this.itemGroups.push(years)
       }
       this.toggleOrder()
     })
   },
+  updated() {
+    this.$refs.itemGroupElement.forEach(el => {
+      var e = el.children[0].children[0]
+      var id = e.dataset['name']
+      e.style.backgroundImage = `url('/video/${id}.jpg')`
+    })
+  },
   methods: {
     toggleOrder: function() {
-      for (let i in this.yearGroups) {
-        this.yearGroups[i].reverse()
+      for (let i in this.itemGroups) {
+        this.itemGroups[i].reverse()
       }
-      this.yearGroups.reverse()
+      this.itemGroups.reverse()
     },
     queryWatched: function() {
       var keys = Object.keys(localStorage).filter(function(key) {
@@ -117,8 +130,8 @@ export default {
       }
       return watchCount
     },
-    allWatched: function(yearItemGrouping) {
-      return yearItemGrouping.watchCount === yearItemGrouping.fileCount
+    allWatched: function(itemGrouping) {
+      return itemGrouping.watchCount === itemGrouping.fileCount
     }
   }
 }
@@ -131,11 +144,13 @@ export default {
   background-color: rgb(255, 255, 255);
 }
 .content-area {
-  padding: 10px;
+  padding: 15px;
 }
 .tile {
   left: 0;
   transition: left 21s linear;
+  overflow: hidden;
+  margin: 0px;
 }
 .sort-button {
   margin-bottom: 10px;
@@ -147,6 +162,35 @@ export default {
   bottom: 5px;
   right: 5px;
   background-color: rgba(202, 202, 202, 0.459);
+}
+
+.box {
+  padding: 0px;
+}
+.box:hover .moz {
+  background-position: top;
+}
+.moz {
+  margin-bottom: 10px;
+  content: center;
+  min-width: 35%;
+  min-height: 35%;
+  min-height: 100px;
+  background-origin: content-box;
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+.title,
+.subtitle,
+.duration {
+  margin-bottom: 0.8em !important;
+}
+.duration {
+  color: grey;
+  font-size: 0.8em;
+  font-style: italic;
 }
 .year-tile:hover {
   background-color: rgba(165, 0, 0, 0.651);
