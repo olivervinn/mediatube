@@ -17,12 +17,14 @@ const router = new Router({
       }
     },
     {
-      path: "/logout",
+      name: "error",
+      path: "/error",
       component: () => import("./views/Login.vue"),
       meta: {
         metaTags: {},
         auth: false
-      }
+      },
+      props: true
     },
     {
       path: "/browse",

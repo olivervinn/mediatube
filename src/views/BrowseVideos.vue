@@ -56,12 +56,12 @@ export default {
     route: ''
   }),
   watch: {
-    id: function(_now, _old) {
-      this.getData(this.filter)
+    id: async function(_now, _old) {
+      await this.getData(this.filter)
     }
   },
-    created() {
-      this.getData(this.filter)
+    async created() {
+      await this.getData(this.filter)
     },
     mounted() {
       this.open()
@@ -92,37 +92,36 @@ export default {
         }
         this.reverse = !this.reverse
       },
-      getData(filter) {
+      async getData(filter) {
         let id = this.id
         this.assets = []
-        Config.fetchCatalog().then(data => {
-          if (!filter) {
-            if (data[id]) {
-              for (let p in data[id].assets) {
-                let _ = data[id].assets[p]
-                this.assets.push({
-                  videoId: _._,
-                  duration: _.duration
-                })
-              }
-            }
-          } else {
-            data[id].assets.sort()
+        const data = await Config.fetchCatalog()
+        if (!filter) {
+          if (data[id]) {
             for (let p in data[id].assets) {
-              const fileElement = data[id].assets[p]
-              if (fileElement.tags && fileElement.tags.contains(filter)) {
-                this.assets.push({
-                  videoId: fileElement._,
-                  duration: fileElement.duration
-                })
-              }
+              let _ = data[id].assets[p]
+              this.assets.push({
+                videoId: _._,
+                duration: _.duration
+              })
             }
           }
-          this.toggleOrderLength()
-          setTimeout(() => {
-            this.loadingComponent.close()
-          }, 10)
-        })
+        } else {
+          data[id].assets.sort()
+          for (let p in data[id].assets) {
+            const fileElement = data[id].assets[p]
+            if (fileElement.tags && fileElement.tags.contains(filter)) {
+              this.assets.push({
+                videoId: fileElement._,
+                duration: fileElement.duration
+              })
+            }
+          }
+        }
+        this.toggleOrderLength()
+        setTimeout(() => {
+          this.loadingComponent.close()
+        }, 10)
       }
     }
 }

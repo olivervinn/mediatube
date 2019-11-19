@@ -57,26 +57,27 @@ export default {
     year: new Date().getFullYear()
   }),
   mounted() {},
-  created() {
-    Config.fetchCatalog().then(response => {
+  async created() {
+    try {
+      const data = await Config.fetchCatalog()
       this.folders = []
-      for (let p in response) {
-        if (response[p].assets) {
+      for (let item in data) {
+        if (data[item].assets) {
           this.folders.push({
-            name: p,
-            time: response[p].time,
-            assets: response[p].assets
+            name: item,
+            time: data[item].time,
+            assets: data[item].assets
           })
         }
       }
-    })
+    } catch (e) {
+      this.$router.push({ name: 'error', params: { error: e } })
+    }
   },
   methods: {
-    logout: function() {
-      this.$store
-        .dispatch('login', { jwt: 'wrong' })
-        .then(() => this.$router.push('/login'))
-        .catch()
+    logout: async function() {
+      await this.$store.dispatch('logout')
+      this.$router.push({ path: '/login' })
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -95,6 +96,10 @@ export default {
   font-size: 2em;
   color: white;
   margin-left: 10px;
+}
+.navbar-dropdown{
+  max-height: 45vh;
+  overflow-y: scroll;
 }
 .active-year {
   clear: none;

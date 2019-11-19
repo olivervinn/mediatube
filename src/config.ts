@@ -5,20 +5,19 @@ export const Config = {
     return 'Tube'
   },
   fetchCatalog: async () => {
-    try {
-      const target = `/video/catalog.json`
-      const options = auth.options()
-      const r = await fetch(target, options)
-      return r.json()
-    } catch {}
+    const target = `/video/catalog.json`
+    const options = auth.options()
+    const response = await fetch(target, options)
+    const data = await response.json()
+    return data
   },
   fetchMeta: async (id: String) => {
-    try {
-      const target = `${Config.getResource(id, 'meta')}`
-      const options = auth.options()
-      const r = await fetch(target, options)
-      return r.json()
-    } catch {}
+    const target = `${Config.getResource(id, 'meta')}`
+    const options = auth.options()
+    const response = await fetch(target, options)
+    const data = await response.json()
+    console.log(data)
+    return data
   },
   getResource: (id: String, type: String) => {
     if (type === 'video') {

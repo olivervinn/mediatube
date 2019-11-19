@@ -1,18 +1,14 @@
 <template>
   <div id="app">
-    <SiteChrome>
       <transition name="fade">
         <router-view />
       </transition>
-    </SiteChrome>
   </div>
 </template>
 
 <script lang="ts">
-import SiteChrome from './views/SiteChrome.vue'
-
 export default {
-  components: { SiteChrome }
+  components: {  }
 }
 </script>
 <style lang="scss">
@@ -36,7 +32,8 @@ input:after {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  min-height: 100vh;
+  height:100vh;
+  width: 100%;
 }
 .panel {
   background: #e4e4e4;

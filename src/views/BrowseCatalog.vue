@@ -75,22 +75,22 @@ export default {
   }),
   computed: {},
   mounted() {},
-  created() {
-    const watchCount = this.queryWatched()
-    Config.fetchCatalog().then(response => {
-      let lastYear = 0
-      let nyear = new Date().getFullYear()
-      let years = []
-      this.itemGroups = []
-
-      for (let p in response) {
-        let year = Number.parseInt(p)
+  async created() {
+    let nyear = new Date().getFullYear()
+    let lastYear = 0
+    let years = []
+    this.itemGroups = []
+    try {
+      const watchCount = this.queryWatched()
+      const data = await Config.fetchCatalog()
+      for (let group in data) {
+        let year = Number.parseInt(group)
         years.push({
-          name: p,
+          name: group,
           ago: nyear - year,
-          fileCount: response[p].assets.length,
-          watchCount: watchCount[p],
-          duration: response[p].time
+          fileCount: data[group].assets.length,
+          watchCount: watchCount[group],
+          duration: data[group].time
         })
         if (year % 5 === 0 || year >= lastYear + 5) {
           this.itemGroups.push(years)
@@ -102,7 +102,9 @@ export default {
         this.itemGroups.push(years)
       }
       this.toggleOrder()
-    })
+    } catch (e) {
+      this.$router.push({ name: 'error', params: { error: e } })
+    }
   },
   updated() {
     this.$refs.itemGroupElement.forEach(el => {
